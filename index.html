@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnboardWorks Certificate Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fff9;
+      color: #1b5e20;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .card {
+      background: white;
+      border: 2px solid #2e7d32;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1b5e20;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>OnboardWorks Certificate Verification</h1>
+  <div class="card">
+    <p>Enter your Certificate ID below:</p>
+    <input type="text" id="certId" placeholder="Enter Certificate ID">
+    <button onclick="verifyCertificate()">Verify</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function verifyCertificate() {
+      const certId = document.getElementById("certId").value;
+      const resultBox = document.getElementById("result");
+
+      if (!certId) {
+        resultBox.innerHTML = "❌ Please enter a Certificate ID.";
+        return;
+      }
+
+      // Replace this with your Apps Script API URL
+      const apiUrl = "YOUR_SCRIPT_URL_HERE?certId=" + encodeURIComponent(certId);
+
+      resultBox.innerHTML = "⏳ Checking...";
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        if (data.valid) {
+          resultBox.innerHTML = "✅ Certificate is valid.<br>Issued to: " + data.name;
+        } else {
+          resultBox.innerHTML = "❌ Certificate not found.";
+        }
+      } catch (error) {
+        resultBox.innerHTML = "⚠️ Error verifying certificate.";
+      }
+    }
+  </script>
+</body>
+</html>
