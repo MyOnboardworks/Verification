@@ -1,0 +1,16 @@
+[
+  {
+    "id": "DK1001",
+    "name": "Rahul Mehta",
+    "course": "Web Development Bootcamp",
+    "status": "Valid",
+    "issueDate": "2025-09-10"
+  },
+  {
+    "id": "OW2025-002",
+    "name": "Aditi Singh",
+    "course": "Python Basics",
+    "status": "Valid",
+    "issueDate": "2025-09-12"
+  }
+]
