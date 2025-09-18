@@ -57,33 +57,39 @@
     <div id="result"></div>
   </div>
 
-  <script>
-    async function verifyCertificate() {
-      const certId = document.getElementById("certId").value;
-      const resultBox = document.getElementById("result");
+  
+<script>
+  async function verifyCertificate() {
+    const certId = document.getElementById("certId").value.trim();
+    const resultBox = document.getElementById("result");
 
-      if (!certId) {
-        resultBox.innerHTML = "❌ Please enter a Certificate ID.";
-        return;
-      }
-
-      // Replace this with your Apps Script API URL
-      const apiUrl = "YOUR_SCRIPT_URL_HERE?certId=" + encodeURIComponent(certId);
-
-      resultBox.innerHTML = "⏳ Checking...";
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        if (data.valid) {
-          resultBox.innerHTML = "✅ Certificate is valid.<br>Issued to: " + data.name;
-        } else {
-          resultBox.innerHTML = "❌ Certificate not found.";
-        }
-      } catch (error) {
-        resultBox.innerHTML = "⚠️ Error verifying certificate.";
-      }
+    if (!certId) {
+      resultBox.innerHTML = "❌ Please enter a Certificate ID.";
+      return;
     }
-  </script>
+
+    try {
+      const response = await fetch("certificates.json");
+      const data = await response.json();
+
+      const cert = data.find(c => c.id.toLowerCase() === certId.toLowerCase());
+
+      if (cert) {
+        resultBox.innerHTML = `
+          ✅ Certificate Found<br>
+          <strong>Name:</strong> ${cert.name}<br>
+          <strong>Course:</strong> ${cert.course}<br>
+          <strong>Status:</strong> ${cert.status}<br>
+          <strong>Issue Date:</strong> ${cert.issueDate}
+        `;
+      } else {
+        resultBox.innerHTML = "❌ Invalid Certificate ID";
+      }
+    } catch (error) {
+      resultBox.innerHTML = "⚠️ Error loading certificate data.";
+    }
+  }
+</script>
+
 </body>
 </html>
