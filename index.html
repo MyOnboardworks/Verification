@@ -1,101 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OnboardWorks | Certificate Verification</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnboardWorks Certificate Verification</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #f4fdf7;
-      color: #1a3c2e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      text-align: center;
-      max-width: 480px;
-      width: 100%;
-      background: #ffffff;
-      border: 1px solid #dcefe2;
-      border-radius: 16px;
-      padding: 40px 30px;
-      box-shadow: 0 6px 16px rgba(0, 64, 32, 0.05);
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      color: #256c45;
-    }
-
-    p {
-      font-size: 0.95rem;
-      color: #4f6658;
-      margin-bottom: 25px;
-    }
-
-    input {
-      padding: 12px 14px;
-      width: 100%;
-      border: 1px solid #b5d8c3;
-      border-radius: 10px;
-      font-size: 1rem;
-      outline: none;
-      transition: border 0.2s ease;
-    }
-
-    input:focus {
-      border-color: #2f855a;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 12px 24px;
-      width: 100%;
-      background: #2f855a;
-      color: #ffffff;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    button:hover {
-      background: #256c45;
-    }
-
-    #result {
-      margin-top: 25px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      line-height: 1.6;
-    }
-
-    .success {
+      font-family: Arial, sans-serif;
+      background: #f9fff9;
       color: #1b5e20;
+      text-align: center;
+      padding: 50px;
     }
-
-    .error {
-      color: #c62828;
+    h1 {
+      color: #2e7d32;
     }
-
-    .info {
-      color: #8d6e63;
+    .card {
+      background: white;
+      border: 2px solid #2e7d32;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1b5e20;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Certificate Verification</h1>
-    <p>Verify the authenticity of your OnboardWorks certificate</p>
-    <input type="text" id="certId" placeholder="Enter Certificate ID" />
+  <h1>OnboardWorks Certificate Verification</h1>
+  <div class="card">
+    <p>Enter your Certificate ID below:</p>
+    <input type="text" id="certId" placeholder="Enter Certificate ID">
     <button onclick="verifyCertificate()">Verify</button>
     <div id="result"></div>
   </div>
@@ -106,29 +63,26 @@
       const resultBox = document.getElementById("result");
 
       if (!certId) {
-        resultBox.innerHTML = "<span class='error'>❌ Please enter a Certificate ID.</span>";
+        resultBox.innerHTML = "❌ Please enter a Certificate ID.";
         return;
       }
 
       try {
         const response = await fetch("certificates.json");
         const data = await response.json();
-
         const cert = data.find(c => c.id.toLowerCase() === certId.toLowerCase());
 
         if (cert) {
-          resultBox.innerHTML = `
-            <span class="success">✅ Certificate Verified</span><br>
-            <strong>Name:</strong> ${cert.name}<br>
-            <strong>Course:</strong> ${cert.course}<br>
-            <strong>Status:</strong> ${cert.status}<br>
-            <strong>Issue Date:</strong> ${cert.issueDate}
-          `;
+          resultBox.innerHTML = `✅ Certificate Found<br>
+                                 <strong>Name:</strong> ${cert.name}<br>
+                                 <strong>Course:</strong> ${cert.course}<br>
+                                 <strong>Status:</strong> ${cert.status}<br>
+                                 <strong>Issue Date:</strong> ${cert.issueDate}`;
         } else {
-          resultBox.innerHTML = "<span class='error'>❌ Invalid Certificate ID</span>";
+          resultBox.innerHTML = "❌ Invalid Certificate ID";
         }
       } catch (error) {
-        resultBox.innerHTML = "<span class='info'>⚠️ Unable to load certificate data. Please try again later.</span>";
+        resultBox.innerHTML = "⚠️ Error loading certificate data.";
       }
     }
   </script>
