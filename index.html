@@ -1,74 +1,142 @@
-<script>
-  // 🔹 Function to fetch and verify
-  async function verifyCertificate(certId) {
-    const resultBox = document.getElementById("result");
-    const inputCard = document.getElementById("inputCard");
-
-    if (!certId) {
-      resultBox.innerHTML = "❌ Please enter a Certificate ID.";
-      return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnboardWorks Certificate Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fff9;
+      color: #1b5e20;
+      text-align: center;
+      padding: 50px;
     }
 
-    try {
-      // ✅ Add cache-busting parameter
-      const response = await fetch("certificates.json?v=" + Date.now());
-      const data = await response.json();
-      const cert = data.find(c => c.id === certId);
+    h1 {
+      color: #2e7d32;
+    }
 
-      if (cert) {
-        // Hide input card if verified via link
-        if (window.location.search.includes("certId")) {
-          inputCard.style.display = "none";
-        }
+    .card {
+      background: white;
+      border: 2px solid #2e7d32;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
 
-        resultBox.innerHTML = `
-  <div style="
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 35px 30px;
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 10px 10px 30px rgba(0,0,0,0.2), -10px -10px 30px rgba(255,255,255,0.2);
-    text-align: left;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #004d40;
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
-  ">
-    <h2 style="
-      margin-bottom: 25px; 
-      font-size: 2em; 
-      letter-spacing: 1px; 
-      border-bottom: 2px solid rgba(0, 77, 64, 0.4); 
-      padding-bottom: 10px;
-    ">Certificate Verification</h2>
-    <p style="margin: 12px 0;"><strong>Full Name:</strong> ${cert.name} <span style="color:green; font-weight:bold;">VERIFIED</span></p>
-    <p style="margin: 12px 0;"><strong>Course Title:</strong> ${cert.course}</p>
-    <p style="margin: 12px 0;"><strong>Certification Status:</strong> ${cert.status}</p>
-    <p style="margin: 12px 0;"><strong>Date of Issue:</strong> ${cert.issueDate}</p>
+    input {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      border: 1px solid #2e7d32;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1b5e20;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>OnboardWorks Certificate Verification</h1>
+  <div class="card">
+    <p>Enter your Certificate ID below:</p>
+    <input type="text" id="certId" placeholder="Enter Certificate ID">
+    <button onclick="verifyCertificate()">Verify</button>
+    <div id="result"></div>
   </div>
-`;
-      } else {
-        resultBox.innerHTML = "❌ Invalid Certificate ID";
+
+  <script>
+    async function verifyCertificate() {
+      const certId = document.getElementById("certId").value.trim();
+      const resultBox = document.getElementById("result");
+
+      if (!certId) {
+        resultBox.innerHTML = "❌ Please enter a Certificate ID.";
+        return;
       }
-    } catch (error) {
-      resultBox.innerHTML = "⚠️ Error loading certificate data.";
-    }
-  }
 
-  // Manual verify button
-  function manualVerify() {
-    const certId = document.getElementById("certId").value.trim();
-    verifyCertificate(certId);
-  }
+      try {
+        const response = await fetch("certificates.json");
+        const data = await response.json();
 
-  // 🔹 Auto check when certId is in URL
-  window.onload = () => {
-    const params = new URLSearchParams(window.location.search);
-    const certId = params.get("certId");
-    if (certId) {
-      verifyCertificate(certId);
+        // Case-sensitive verification
+        const cert = data.find(c => c.id === certId);
+
+        if (cert) {
+          resultBox.innerHTML = `
+            <div style="
+              max-width: 500px;
+              margin: 50px auto;
+              padding: 35px 30px;
+              border-radius: 25px;
+              background: rgba(255, 255, 255, 0.15);
+              backdrop-filter: blur(15px);
+              border: 1px solid rgba(255, 255, 255, 0.3);
+              box-shadow: 10px 10px 30px rgba(0,0,0,0.2),
+                          -10px -10px 30px rgba(255,255,255,0.2);
+              text-align: left;
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              color: #004d40;
+              transition: transform 0.5s ease, box-shadow 0.5s ease;
+            "
+            onmouseover="
+              this.style.transform='rotateX(6deg) rotateY(6deg) scale(1.06)';
+              this.style.boxShadow='15px 15px 40px rgba(0,0,0,0.35), 
+                                    -15px -15px 40px rgba(255,255,255,0.3)';
+            "
+            onmouseout="
+              this.style.transform='rotateX(0deg) rotateY(0deg) scale(1)';
+              this.style.boxShadow='10px 10px 30px rgba(0,0,0,0.2), 
+                                    -10px -10px 30px rgba(255,255,255,0.2)';
+            ">
+              <h2 style="
+                margin-bottom: 25px;
+                font-size: 2em;
+                letter-spacing: 1px;
+                border-bottom: 2px solid rgba(0, 77, 64, 0.4);
+                padding-bottom: 10px;
+              ">Certificate Verification</h2>
+
+              <p style="margin: 12px 0;">
+                <strong>Full Name:</strong> ${cert.name} 
+                <span style="color:green; font-weight:bold;">VERIFIED</span>
+              </p>
+              <p style="margin: 12px 0;">
+                <strong>Course Title:</strong> ${cert.course}
+              </p>
+              <p style="margin: 12px 0;">
+                <strong>Certification Status:</strong> ${cert.status}
+              </p>
+              <p style="margin: 12px 0;">
+                <strong>Date of Issue:</strong> ${cert.issueDate}
+              </p>
+            </div>
+          `;
+        } else {
+          resultBox.innerHTML = "❌ Invalid Certificate ID";
+        }
+      } catch (error) {
+        resultBox.innerHTML = "⚠️ Error loading certificate data.";
+      }
     }
-  };
-</script>
+  </script>
+</body>
+</html>
