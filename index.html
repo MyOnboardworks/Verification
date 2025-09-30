@@ -24,7 +24,7 @@
       margin: auto;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
     }
-    input {
+    input, button {
       padding: 10px;
       width: 80%;
       margin: 10px 0;
@@ -32,12 +32,11 @@
       border-radius: 6px;
     }
     button {
-      padding: 10px 20px;
       background: #2e7d32;
       color: white;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
+      width: auto;
     }
     button:hover {
       background: #1b5e20;
@@ -50,17 +49,18 @@
 </head>
 <body>
   <h1>OnboardWorks Certificate Verification</h1>
-  <div class="card">
+  <div class="card" id="inputCard">
     <p>Enter your Certificate ID below:</p>
     <input type="text" id="certId" placeholder="Enter Certificate ID">
-    <button onclick="verifyCertificate()">Verify</button>
+    <button onclick="manualVerify()">Verify</button>
     <div id="result"></div>
   </div>
 
   <script>
-    async function verifyCertificate() {
-      const certId = document.getElementById("certId").value.trim();
+    // 🔹 Function to fetch and verify
+    async function verifyCertificate(certId) {
       const resultBox = document.getElementById("result");
+      const inputCard = document.getElementById("inputCard");
 
       if (!certId) {
         resultBox.innerHTML = "❌ Please enter a Certificate ID.";
@@ -70,10 +70,14 @@
       try {
         const response = await fetch("certificates.json");
         const data = await response.json();
-        // Case-sensitive verification
         const cert = data.find(c => c.id === certId);
 
         if (cert) {
+          // Hide input card if verified via link
+          if (window.location.search.includes("certId")) {
+            inputCard.style.display = "none";
+          }
+
           resultBox.innerHTML = `
   <div style="
     max-width: 500px;
@@ -88,14 +92,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #004d40;
     transition: transform 0.5s ease, box-shadow 0.5s ease;
-  "
-  onmouseover="
-    this.style.transform='rotateX(6deg) rotateY(6deg) scale(1.06)';
-    this.style.boxShadow='15px 15px 40px rgba(0,0,0,0.35), -15px -15px 40px rgba(255,255,255,0.3)';
-  " 
-  onmouseout="
-    this.style.transform='rotateX(0deg) rotateY(0deg) scale(1)';
-    this.style.boxShadow='10px 10px 30px rgba(0,0,0,0.2), -10px -10px 30px rgba(255,255,255,0.2)';
   ">
     <h2 style="
       margin-bottom: 25px; 
@@ -117,6 +113,21 @@
         resultBox.innerHTML = "⚠️ Error loading certificate data.";
       }
     }
+
+    // Manual verify button
+    function manualVerify() {
+      const certId = document.getElementById("certId").value.trim();
+      verifyCertificate(certId);
+    }
+
+    // 🔹 Auto check when certId is in URL
+    window.onload = () => {
+      const params = new URLSearchParams(window.location.search);
+      const certId = params.get("certId");
+      if (certId) {
+        verifyCertificate(certId);
+      }
+    };
   </script>
 </body>
 </html>
