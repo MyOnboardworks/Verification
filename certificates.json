@@ -7,10 +7,13 @@
     "issueDate": "2025-09-27"
   },
   {
-    "id": "OW2025-002",
-    "name": "Aditi Singh",
-    "course": "Python Basics",
+    "id": "NS1002",
+    "name": "Naveen Sharma",
+    "course": "Data Science Basics",
     "status": "Valid",
-    "issueDate": "2025-09-12"
+    "issueDate": "2025-09-30"
   }
+
+
+  
 ]
