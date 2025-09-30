@@ -1,84 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OnboardWorks Certificate Verification</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9fff9;
-      color: #1b5e20;
-      text-align: center;
-      padding: 50px;
-    }
-    h1 {
-      color: #2e7d32;
-    }
-    .card {
-      background: white;
-      border: 2px solid #2e7d32;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 500px;
-      margin: auto;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-    }
-    input, button {
-      padding: 10px;
-      width: 80%;
-      margin: 10px 0;
-      border: 1px solid #2e7d32;
-      border-radius: 6px;
-    }
-    button {
-      background: #2e7d32;
-      color: white;
-      border: none;
-      cursor: pointer;
-      width: auto;
-    }
-    button:hover {
-      background: #1b5e20;
-    }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <h1>OnboardWorks Certificate Verification</h1>
-  <div class="card" id="inputCard">
-    <p>Enter your Certificate ID below:</p>
-    <input type="text" id="certId" placeholder="Enter Certificate ID">
-    <button onclick="manualVerify()">Verify</button>
-    <div id="result"></div>
-  </div>
+<script>
+  // 🔹 Function to fetch and verify
+  async function verifyCertificate(certId) {
+    const resultBox = document.getElementById("result");
+    const inputCard = document.getElementById("inputCard");
 
-  <script>
-    // 🔹 Function to fetch and verify
-    async function verifyCertificate(certId) {
-      const resultBox = document.getElementById("result");
-      const inputCard = document.getElementById("inputCard");
+    if (!certId) {
+      resultBox.innerHTML = "❌ Please enter a Certificate ID.";
+      return;
+    }
 
-      if (!certId) {
-        resultBox.innerHTML = "❌ Please enter a Certificate ID.";
-        return;
-      }
+    try {
+      // ✅ Add cache-busting parameter
+      const response = await fetch("certificates.json?v=" + Date.now());
+      const data = await response.json();
+      const cert = data.find(c => c.id === certId);
 
-      try {
-        const response = await fetch("certificates.json");
-        const data = await response.json();
-        const cert = data.find(c => c.id === certId);
+      if (cert) {
+        // Hide input card if verified via link
+        if (window.location.search.includes("certId")) {
+          inputCard.style.display = "none";
+        }
 
-        if (cert) {
-          // Hide input card if verified via link
-          if (window.location.search.includes("certId")) {
-            inputCard.style.display = "none";
-          }
-
-          resultBox.innerHTML = `
+        resultBox.innerHTML = `
   <div style="
     max-width: 500px;
     margin: 50px auto;
@@ -106,28 +49,26 @@
     <p style="margin: 12px 0;"><strong>Date of Issue:</strong> ${cert.issueDate}</p>
   </div>
 `;
-        } else {
-          resultBox.innerHTML = "❌ Invalid Certificate ID";
-        }
-      } catch (error) {
-        resultBox.innerHTML = "⚠️ Error loading certificate data.";
+      } else {
+        resultBox.innerHTML = "❌ Invalid Certificate ID";
       }
+    } catch (error) {
+      resultBox.innerHTML = "⚠️ Error loading certificate data.";
     }
+  }
 
-    // Manual verify button
-    function manualVerify() {
-      const certId = document.getElementById("certId").value.trim();
+  // Manual verify button
+  function manualVerify() {
+    const certId = document.getElementById("certId").value.trim();
+    verifyCertificate(certId);
+  }
+
+  // 🔹 Auto check when certId is in URL
+  window.onload = () => {
+    const params = new URLSearchParams(window.location.search);
+    const certId = params.get("certId");
+    if (certId) {
       verifyCertificate(certId);
     }
-
-    // 🔹 Auto check when certId is in URL
-    window.onload = () => {
-      const params = new URLSearchParams(window.location.search);
-      const certId = params.get("certId");
-      if (certId) {
-        verifyCertificate(certId);
-      }
-    };
-  </script>
-</body>
-</html>
+  };
+</script>
